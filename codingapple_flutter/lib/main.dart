@@ -10,13 +10,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // home: Container(width: 50, height: 50, color: Colors.cyan)
-      home: Center(
-        child: Container( width: 50, height: 50, color: Colors.cyan,),
+      home: Scaffold(
+        appBar: AppBar(title: Text("앱임")),
+        body: Container(
+          width: 50, height: 50, color: Colors.blue,
+          margin: EdgeInsets.all(20),
+        ),
       )
-      // home: SizedBox()
     );
-
-
   }
 }
