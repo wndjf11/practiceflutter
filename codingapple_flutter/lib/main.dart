@@ -12,11 +12,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // home: Container(width: 50, height: 50, color: Colors.cyan)
       home: Center(
-        child: Container( width: 50, height: 50, color: Colors.cyan,),
+        child: Container( width: 50, height: 50, color: Colors.brown,),
       )
       // home: SizedBox()
     );
-
-
   }
 }
