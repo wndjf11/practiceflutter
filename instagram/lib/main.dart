@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import './style.dart' as style;
+// import './style.dart' as style;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/rendering.dart';
@@ -12,10 +12,13 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-      ChangeNotifierProvider(
-        create: (c)=>Store1(),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (c)=>Store1()),
+          ChangeNotifierProvider(create: (c)=>Store2()),
+        ],
         child: MaterialApp(
-          theme: style.theme,
+          // theme: style.theme,
           initialRoute: '/',
           routes: {
             '/' : (c) => MyApp(),
@@ -243,18 +246,19 @@ class _ArticleState extends State<Article> {
                   child: GestureDetector(
                     onTap: (){
                       Navigator.push(context,
-                        // CupertinoPageRoute(builder: (c){
-                        //   return Profile();
-                        // })
-                          PageRouteBuilder(
-                            pageBuilder: (c,a1,a2){
-                              return Profile();
-                            },
-                            transitionsBuilder: (c,a1,a2,child)=>
-                                FadeTransition(opacity: a1,child: child,),
-                            transitionDuration: Duration(milliseconds: 500),
+                        CupertinoPageRoute(builder: (c){
+                          return Profile();
+                        })
+                        //   PageRouteBuilder(
+                        //     pageBuilder: (c,a1,a2){
+                        //       return Profile();
+                        //     },
+                        //     transitionsBuilder: (c,a1,a2,child)=>
+                        //         FadeTransition(opacity: a1,child: child,),
+                        //     transitionDuration: Duration(milliseconds: 500),
+                        //
+                        //   )
 
-                          )
                         //   PageRouteBuilder(
                         //     pageBuilder: (c,a1,a2){
                         //       return Profile();
@@ -302,23 +306,50 @@ class Store1 extends ChangeNotifier {
   }
 }
 
+class Store2 extends ChangeNotifier {
+  var name = 'john kim';
+  var friend = false;
+  var follower = 0;
+  var profileImage = [];
+
+  getData() async{
+    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/profile.json'));
+    var result2= jsonDecode(result.body);
+    profileImage=result2;
+  }
+
+  addFollower(){
+    if (friend == false) {
+      follower++;
+      friend = true;
+    } else {
+      follower--;
+      friend = false;
+    }
+    notifyListeners();
+  }
+}
+
 class Profile extends StatelessWidget {
   const Profile({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.watch<Store1>().name),),
-      body: Column(
+      appBar: AppBar(title: Text(context.watch<Store2>().name)),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.grey,
+          ),
+          Text('팔로워 ${context.watch<Store2>().follower}명'),
           ElevatedButton(onPressed: (){
-            context.read<Store1>().ChangeNameJ();
-          },
-              child: Text("J버튼")),
+            context.read<Store2>().addFollower();
+          }, child: Text('팔로우')),
           ElevatedButton(onPressed: (){
-            context.read<Store1>().ChangeNameC();
-          },
-              child: Text("C버튼"))
+            context.read<Store2>().getData();
+          }, child: Text('사진가져오기'))
         ],
       ),
     );
@@ -346,7 +377,7 @@ class Upload extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.file(userImage),
+          [Text('이미지없음'),Image.file(userImage)][userImage==null?0:1],
           Text("이미지업로드화면"),
           TextField(
             onChanged: (text){
@@ -364,3 +395,4 @@ class Upload extends StatelessWidget {
     );
   }
 }
+
